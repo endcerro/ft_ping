@@ -11,54 +11,57 @@
 # **************************************************************************** #
 
 
-NAME    = fdf
+NAME    = ft_ping
 
-DIRSRC    = src
-OBJD    = obj
-INCLUDE   = incl
+DIRSRC	=	src
+OBJD	=	obj
+INCLUDE	=	incl
 
-INCLUDEF  = $(INCLUDE)/header.h \
-        $(INCLUDE)/test.h
+INCLUDEF	=	$(INCLUDE)/header.h	\
+#				$(INCLUDE)/test.h
 
-SRC     = main.c    \
-        parsing.c \
-        mlx.c     \
-        draw.c    
+SRC	=	main.c	\
+#	parsing.c	\
+#	mlx.c	\
+#	draw.c    
 
 OBJ     = $(SRC:.c=.o)
 OBJS    = $(OBJ:%=$(OBJD)/%)
 
-CFLAGS    =   -Wall -Wextra -g -fsanitize=address #-Werror 
-CFRAME    = -framework AppKit -framework OpenGL
+CFLAGS    = #-Wall -Wextra -g -fsanitize=address #-Werror 
+CFRAME    = #-framework AppKit -framework OpenGL
 
 CC      = clang
 RM      = rm -f
 
-MLX_OS    = minilibx_macos
+MLX_OS    = minilibx_macos 
 LIB     =   libmlx.a
 
 
-$(NAME)   : $(LIB) $(OBJD) $(OBJS) $(INCLUDEF)
-        $(CC) -I ./$(INCLUDE) -I ./$(MLX_OS) $(LIB) $(CFLAGS) $(CFRAME) $(OBJS) -o $(NAME) 
+$(NAME)	:	$(OBJD) $(OBJS) $(INCLUDEF)
+		$(CC) -I ./$(INCLUDE) $(CFLAGS) $(OBJS) -o $(NAME) 
+
+# $(NAME)   : $(LIB) $(OBJD) $(OBJS) $(INCLUDEF)
+#	$(CC) -I ./$(INCLUDE) -I ./$(MLX_OS) $(LIB) $(CFLAGS) $(CFRAME) $(OBJS) -o $(NAME) 
 
 $(OBJD)   :
-        @mkdir $(OBJD)
+		@mkdir $(OBJD)
 
 $(OBJD)/%.o : $(DIRSRC)/%.c 
-        $(CC) -I ./$(INCLUDE) -I ./$(INCLUDE) $(CFLAGS) -o $@ -c $<
+		$(CC) -I ./$(INCLUDE) $(CFLAGS) -o $@ -c $<
 
 $(LIB)      :
-        $(MAKE) -C $(MLX_OS)
-        cp $(MLX_OS)/$(LIB) ./.
+		$(MAKE) -C $(MLX_OS)
+		cp $(MLX_OS)/$(LIB) ./.
 
 all     : $(NAME)
 
 clean   :
-        $(RM) $(OBJS)
+		$(RM) $(OBJS)
 
 fclean    : clean
-        
-        $(RM) $(NAME) $(LIB)
+		
+		$(RM) $(NAME) $(LIB)
 
 
 bonus   : all
