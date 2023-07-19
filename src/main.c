@@ -56,15 +56,20 @@ int main(int argc, char **argv){
   struct addrinfo *res;
 
   ft_bzero((void*)&hints, sizeof(hints));
-  ft_bzero((void*)res, sizeof(res));
+  res = NULL;
 
   // target_addr.sin_family = AF_INET;
 
   char *ip_addr = "192.168.1.1";
   char *port = "0";
-  getaddrinfo(ip_addr, port, &hints, &res);
+
+  int error = getaddrinfo(ip_addr, port, &hints, &res);
+  printf("Error : %d\n",error );
+  char converted[100];
+  inet_ntop(res->ai_family, res->ai_addr->sa_data);
+
   
 
-
+  freeaddrinfo(res);
   return 0;
 }

@@ -28,7 +28,7 @@ SRC	=	main.c	\
 OBJ     = $(SRC:.c=.o)
 OBJS    = $(OBJ:%=$(OBJD)/%)
 
-CFLAGS  = #-Wall -Wextra -g -fsanitize=address #-Werror 
+CFLAGS  = -g -fsanitize=address#-Wall -Wextra  #-Werror 
 CFRAME  = #-framework AppKit -framework OpenGL
 
 CC      = gcc
