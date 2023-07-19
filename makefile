@@ -31,7 +31,7 @@ OBJS    = $(OBJ:%=$(OBJD)/%)
 CFLAGS  = #-Wall -Wextra -g -fsanitize=address #-Werror 
 CFRAME  = #-framework AppKit -framework OpenGL
 
-CC      = clang
+CC      = gcc
 RM      = rm -f
 
 LIBFT   = libft
@@ -39,7 +39,7 @@ LIB     = libft.a
 
 
 $(NAME)	:	$(OBJD) $(OBJS) $(INCLUDEF) $(LIB)
-		$(CC) -I ./$(INCLUDE) -I ./$(LIBFT) $(CFLAGS) $(LIB) $(OBJS) -o $(NAME) 
+		$(CC) -I ./$(INCLUDE) -I ./$(LIBFT)/libft.h $(CFLAGS) $(OBJS) $(LIB) -o $(NAME) 
 
 # $(NAME)   : $(LIB) $(OBJD) $(OBJS) $(INCLUDEF)
 #	$(CC) -I ./$(INCLUDE) -I ./$(MLX_OS) $(LIB) $(CFLAGS) $(CFRAME) $(OBJS) -o $(NAME) 

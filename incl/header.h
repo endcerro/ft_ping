@@ -4,7 +4,7 @@
 #include "../libft/libft.h"
 #include <stdio.h>
 #include <arpa/inet.h>
-
+#include <signal.h>
 typedef struct _targetInfo
 {
   int sockfd;
