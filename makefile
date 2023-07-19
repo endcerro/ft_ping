@@ -28,18 +28,18 @@ SRC	=	main.c	\
 OBJ     = $(SRC:.c=.o)
 OBJS    = $(OBJ:%=$(OBJD)/%)
 
-CFLAGS    = #-Wall -Wextra -g -fsanitize=address #-Werror 
-CFRAME    = #-framework AppKit -framework OpenGL
+CFLAGS  = #-Wall -Wextra -g -fsanitize=address #-Werror 
+CFRAME  = #-framework AppKit -framework OpenGL
 
 CC      = clang
 RM      = rm -f
 
-MLX_OS    = minilibx_macos 
-LIB     =   libmlx.a
+LIBFT   = libft
+LIB     = libft.a
 
 
-$(NAME)	:	$(OBJD) $(OBJS) $(INCLUDEF)
-		$(CC) -I ./$(INCLUDE) $(CFLAGS) $(OBJS) -o $(NAME) 
+$(NAME)	:	$(OBJD) $(OBJS) $(INCLUDEF) $(LIB)
+		$(CC) -I ./$(INCLUDE) -I ./$(LIBFT) $(CFLAGS) $(LIB) $(OBJS) -o $(NAME) 
 
 # $(NAME)   : $(LIB) $(OBJD) $(OBJS) $(INCLUDEF)
 #	$(CC) -I ./$(INCLUDE) -I ./$(MLX_OS) $(LIB) $(CFLAGS) $(CFRAME) $(OBJS) -o $(NAME) 
@@ -51,8 +51,8 @@ $(OBJD)/%.o : $(DIRSRC)/%.c
 		$(CC) -I ./$(INCLUDE) $(CFLAGS) -o $@ -c $<
 
 $(LIB)      :
-		$(MAKE) -C $(MLX_OS)
-		cp $(MLX_OS)/$(LIB) ./.
+		$(MAKE) -C $(LIBFT)
+		cp $(LIBFT)/$(LIB) ./.
 
 all     : $(NAME)
 
