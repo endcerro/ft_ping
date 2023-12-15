@@ -3,73 +3,49 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <string.h>
 
 void handler(int code){
   exit(0);
 }
 
+int getAddressFromHostname(const char* hostname , struct addrinfo **results);
 
-/*char *host_to_ip(char *addr_host, struct sockaddr_in *addr_con)
-{
-    struct hostent *host = NULL;
-    char *ip = NULL;
+char *processAddrinfo(struct addrinfo *address){
 
-
-
-    if ((ip = malloc(NI_MAXHOST*sizeof(char))) == NULL)
-      return NULL;
- 
-    if ((host_entity = gethostbyname(addr_host)) == NULL)
-    {
-      free(ip)
-      return NULL;
-    }
-   
-   getaddrinfo(addr_host, NULL,  )  
-    //filling up address structure
-    strcpy(ip, inet_ntoa(*(struct in_addr *)
-                          host->h_addr));
- 
-    (*addr_con).sin_family = host->h_addrtype;
-    (*addr_con).sin_port = htons (0);
-    (*addr_con).sin_addr.s_addr  = *(long*)host->h_addr;
- 
-    return ip;
-
-}*/
-
-/*char *ip_to_host(char *ip)
-{
-  char *ret;
-
-  return ret;
-}*/
+  if (address->ai_family == AF_INET) 
+  {
+            struct sockaddr_in *psai = (struct sockaddr_in*)address->ai_addr;
+        char ip[INET_ADDRSTRLEN];
+        if (inet_ntop(address->ai_family, &(psai->sin_addr), ip, INET_ADDRSTRLEN) != NULL) {
+            printf("IP: %s\n", ip);
+        }
+  }
+  else if (address->ai_family == AF_INET6) {
+        struct sockaddr_in6 *psai = (struct sockaddr_in6*)address->ai_addr;
+        char ip[INET6_ADDRSTRLEN];
+        if (inet_ntop(address->ai_family, &(psai->sin6_addr), ip, INET6_ADDRSTRLEN) != NULL) {
+            printf("IP: %s\n", ip);
+        }
+        }
+  return 0;
+}
 
 int main(int argc, char **argv){
 
   signal(SIGABRT, handler);
-  targetInfo tinfo;
-  serverInfo sinfo;
+  const char *ip_addr = "163.172.250.16";
+  const char *hostname = "42.fr";
 
-  // struct sockaddr_in  target_addr;
-  struct addrinfo hints;
-  struct addrinfo *res;
+  struct addrinfo *result = 0;
 
-  ft_bzero((void*)&hints, sizeof(hints));
-  res = NULL;
+  getAddressFromHostname("google.com", &result);
+  processAddrinfo(result);
 
-  // target_addr.sin_family = AF_INET;
+  freeaddrinfo(result);
+  // getAddressFromHostname("43.azerty",&result);
+  // freeaddrinfo(result);
 
-  char *ip_addr = "192.168.1.1";
-  char *port = "0";
 
-  int error = getaddrinfo(ip_addr, port, &hints, &res);
-  printf("Error : %d\n",error );
-  char converted[100];
-  inet_ntop(res->ai_family, res->ai_addr->sa_data);
-
-  
-
-  freeaddrinfo(res);
   return 0;
 }
