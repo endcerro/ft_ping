@@ -22,7 +22,7 @@ INCLUDEF	=	$(INCLUDE)/header.h	\
 
 SRC	=	main.c	\
 	network.c	\
-#	mlx.c	\
+	ipheader.c	\
 #	draw.c    
 
 OBJ     = $(SRC:.c=.o)
