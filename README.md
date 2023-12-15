@@ -2,7 +2,7 @@
 
 
 Lets ping 163.172.250.16 or 42.fr
-
+https://manpages.debian.org/bullseye/inetutils-ping/ping.1.en.html
 
 Allowd functions are :
 
