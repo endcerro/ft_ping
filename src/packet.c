@@ -42,7 +42,8 @@ void fill_icmp_header(void *buffer)
 	// ft_bzero(icmp, ICMP_HDR_SIZE + ICMP_BODY_SIZE);
 	fill_timestamp(buffer);
 	icmp->type = ICMP_ECHO;
-	icmp->un.echo.id = htons(0);
+	icmp->code = 0;
+	icmp->un.echo.id = htons(42);
 	icmp->un.echo.sequence = htons(ping_data.sequence++);
 	icmp->checksum = checksum(buffer, ICMP_HDR_SIZE + ICMP_BODY_SIZE);
 	// printf("Seq len is %d", ping_data.sequence);
@@ -61,31 +62,26 @@ void process_pong(void *buffer)
 	struct iphdr *ip = buffer;
 	struct icmphdr *icmp = buffer + IP_HDR_SIZE;
 	struct timeval *time = buffer + IP_HDR_SIZE + ICMP_HDR_SIZE;
-	char			*sender = inet_ntoa((struct in_addr){.s_addr = ip->saddr});
-	u_int16_t		recvd_seq = ntohs(icmp->un.echo.sequence);
-	const char		*error_str;
+		
+	char			*ip_str = inet_ntoa(*(struct in_addr*)&ip->saddr);
+	unsigned int	recvd_seq = htons(icmp->un.echo.sequence);
+	// const char		*error_str;
 	suseconds_t		rtt = time_diff(time);
 
 	// printf("Actual time=%ld.%02ld \n", rtt / 1000l, rtt % 1000l);
 
 	if (icmp->type != ICMP_ECHOREPLY)
 	{
-		if (icmp->type == ICMP_ECHO)
-			return ;
-		// if (icmp->type < sizeof(icmp_responses))
-		// 	error_str = icmp_responses[icmp->type];
-		// else
-		// 	error_str = NULL;
-		printf("From %s icmp_seq=%hu %s\n", sender, recvd_seq, error_str);
-
-		// g_stats.nb_errors++;
+		char *strptr = get_icmp_error_str(icmp->type);
+		printf("From %s icmp_seq=%hu %s\n", ip_str, recvd_seq, 0);
 	}
 	else
 	{
+		++ping_data.stats.total_received; 
 		// rtt = get_rtt(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
 		printf("%hu bytes from %s: icmp_seq=%hu ttl=%hhu time=%ld.%02ld ms\n", \
 			(uint16_t)(ntohs(ip->tot_len) - IP_HDR_SIZE), \
-			sender, recvd_seq, ip->ttl, rtt / 1000l, rtt % 1000l);
+			ip_str, recvd_seq, ip->ttl, rtt / 1000l, rtt % 1000l);
 
 		// update_rtt_stats(rtt, seq);
 	}

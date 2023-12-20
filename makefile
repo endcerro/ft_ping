@@ -23,12 +23,12 @@ INCLUDEF	=	$(INCLUDE)/header.h	\
 SRC	=	main.c	\
 	network.c	\
 	packet.c	\
-	utils.c    
+	utils.c    print.c
 
 OBJ     = $(SRC:.c=.o)
 OBJS    = $(OBJ:%=$(OBJD)/%)
 
-CFLAGS  = -g -fsanitize=address#-Wall -Wextra  #-Werror 
+CFLAGS  = -g -fsanitize=address #-Wall -Wextra  #-Werror 
 CFRAME  = #-framework AppKit -framework OpenGL
 
 CC      = gcc
@@ -59,7 +59,15 @@ all     : $(NAME)
 clean   :
 		$(RM) $(OBJS)
 
-fclean    : clean
+cleanlib : 
+		$(MAKE) clean -C $(LIBFT)
+
+fcleanlib : cleanlib 
+		echo "fclean $(LIBFT)"
+		@$(MAKE) fclean -C $(LIBFT)
+
+
+fclean    : clean 
 		
 		$(RM) $(NAME) $(LIB)
 

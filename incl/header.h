@@ -23,23 +23,11 @@
 typedef enum { false, true } bool;
 
 
-typedef struct t_data
-{
-	struct sockaddr_in	target;
-	struct addrinfo 	*results; /*Return from getaddrinfo*/
-	struct in_addr    	*address_ptr; /*IPv4 address in above struct*/
+/* Netwok.c */
+void resolve(void);
+void init_socket(void);
 
-	char *hostname_str; //Original input
-	char *ip_str; //String representation of the IP
-	int sock;	//Socket on which we will communicate
-	unsigned int sequence; //Current sequence index
-
-	uint run; //Used for signaling
-	
-	unsigned int port; // Unused ?
-	uint verbose; // Todo
-} s_data;
-
+/* Packet.c*/
 
 void	fill_icmp_header(void *buffer);
 void fill_ip_header(void*buffer, int dest);
@@ -50,12 +38,11 @@ void send_ping(int sig);
 void receive_pong();
 void fatal(const char* str);
 void handler(int code);
-int getAddressFromHostname();
 void print_packet(void * packet);
 void print_timeval(void * packet);
 void fill_timestamp(void *buffer);
+suseconds_t time_diff(struct timeval* then);
 
-void init_socket();
 
 extern s_data ping_data;
 #endif
