@@ -13,8 +13,6 @@ void init_socket(void)
 		fatal("failed opening ICMP socket");
   
   int opt = 1;
-
-    printf("setcokopt");
   //No ip header, build it by hand;
   if (setsockopt(sock, IPPROTO_IP, IP_HDRINCL, &opt, sizeof(opt)) != 0)
     fatal("failed to set socket options");
@@ -63,11 +61,6 @@ void send_ping(int sig)
     fatal("sendto failed\n");
   alarm(1);
 
-  if (ping_data.verbose)
-  {    
-    printf("packet sent :\n");
-    print_packet(send_buffer);
-  }
 }
 
 
@@ -75,7 +68,7 @@ void receive_pong()
 {
   struct msghdr message;
   struct iovec io ;
-  char receive_buffer[IP_HDR_SIZE + ICMP_HDR_SIZE + ICMP_BODY_SIZE];
+  char receive_buffer[(IP_HDR_SIZE + ICMP_HDR_SIZE + ICMP_BODY_SIZE) * 2];
   ft_bzero(&message, sizeof(message));
   ft_bzero(&io, sizeof(io));
   ft_bzero(receive_buffer, sizeof(receive_buffer));
@@ -93,13 +86,7 @@ void receive_pong()
     printf("getaddrinfo error: %s\n", strerror(errno));
 
   }
-  // printf("recvms ret %d:\n", ret);
 
-  if (ping_data.verbose)
-	{
-    printf("packet received :\n");
-    print_packet(receive_buffer);
-	}
   process_pong(receive_buffer);
   usleep(10);
 }

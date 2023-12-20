@@ -33,8 +33,11 @@ int main(int argc, char **argv)
 
   resolve();
   init_socket();
-  printf("FT_PING %s (%s): %d data bytes\n", ping_data.hostname_str, ping_data.ip_str, ICMP_BODY_SIZE);
-   
+  printf("FT_PING %s (%s): %d data bytes", ping_data.hostname_str, ping_data.ip_str, ICMP_BODY_SIZE);
+  if (ping_data.verbose)
+    printf(", id 0x%04x = %d\n", getpid(), getpid());
+  else
+    printf("\n");
   send_ping(0);
 
   // printf("%s\n", print_icmp_error(4));

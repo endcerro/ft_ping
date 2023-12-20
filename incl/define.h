@@ -8,13 +8,18 @@
 #define PACKET_SIZE 84
 
 #define PING_TTL			64
-#define PING_DELAY			1
 
 typedef struct t_stats
 {
 	unsigned int total_sent;
 	unsigned int total_received;
 	long long total_time;
+
+    suseconds_t start;
+    suseconds_t min;
+    suseconds_t max;
+    suseconds_t average;
+    suseconds_t total;
 } s_stats;
 
 typedef struct t_data
@@ -30,10 +35,30 @@ typedef struct t_data
 	int sock;	//Socket on which we will communicate
 	unsigned int sequence; //Current sequence index
 
-	uint run; //Used for signaling
+	int run; //Used for signaling
 	
-	unsigned int port; // Unused ?
+	// unsigned int port; // Unused ?
 	uint verbose; // Todo
 } s_data;
+
+
+static const char *error_table[] = 
+{
+    [ICMP_ECHOREPLY] ="Echo Reply",
+    [ICMP_SOURCE_QUENCH]= "Source Quench",
+    [ICMP_DEST_UNREACH]="Destination Unreachable",
+    [ICMP_REDIRECT] = "Redirect (change route)",
+    [ICMP_ECHO] = "Echo Request",
+    [ICMP_TIME_EXCEEDED]="Time Exceeded",
+    [ICMP_PARAMETERPROB]="Parameter Problem",
+    [ICMP_TIMESTAMP]="Timestamp Request",
+    [ICMP_TIMESTAMPREPLY] ="Timestamp Reply",
+    [ICMP_INFO_REQUEST] ="Information Request ",
+    [ICMP_INFO_REPLY] ="Information Reply ",
+    [ICMP_ADDRESS]="Address Mask Request",
+    [ICMP_ADDRESSREPLY] ="Address Mask Reply",
+    [ICMP_ADDRESSREPLY + 1] ="Unknown"
+};
+
 
 #endif

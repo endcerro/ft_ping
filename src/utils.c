@@ -1,7 +1,6 @@
 #include "header.h"
 
 void handler(int code){
-  ping_data.run = 0;
   summary();
 
   exit(0);
