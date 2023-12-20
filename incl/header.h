@@ -26,7 +26,9 @@ typedef enum { false, true } bool;
 /* Netwok.c */
 void resolve(void);
 void init_socket(void);
+void process_pong(void *buffer);
 
+void summary(void);
 /* Packet.c*/
 
 void	fill_icmp_header(void *buffer);

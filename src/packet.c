@@ -81,6 +81,29 @@ void dump_body(void *buffer)
 	       icmp->un.echo.id, ntohs(icmp->un.echo.sequence));
 }
 
+static void update_stats(suseconds_t time_delta)
+{
+	static int start = 0;
+
+	struct t_stats *stt = &(ping_data.stats);
+	if (start == 0)
+	{
+		stt->start = time_delta;
+		stt->min = time_delta;
+		stt->max = time_delta;
+		stt->total = time_delta;
+		stt->sq_total = time_delta * time_delta;
+		++start;
+	}
+	else 
+	{
+		stt->min = (stt->min > time_delta) ? time_delta : stt->min;
+		stt->max = (stt->max < time_delta) ? time_delta : stt->max  ;
+		stt->total += time_delta;
+		stt->sq_total += time_delta * time_delta;
+	}
+}
+
 void process_pong(void *buffer)
 {
 	struct iphdr *ip = buffer;
@@ -89,12 +112,11 @@ void process_pong(void *buffer)
 		
 	char			*ip_str = inet_ntoa(*(struct in_addr*)&ip->saddr);
 	unsigned int	recvd_seq = htons(icmp->un.echo.sequence);
-	// const char		*error_str;
-	suseconds_t		rtt = time_diff(time);
+	suseconds_t		delta = time_diff(time);
 
 	if (icmp->type != ICMP_ECHOREPLY)
 	{
-		char *strptr = error_table[icmp->type];
+		const char *strptr = error_table[icmp->type];
 		printf("From %s icmp_seq=%hu %s\n", ip_str, recvd_seq, strptr);
 		if (ping_data.verbose)
 		{
@@ -104,12 +126,10 @@ void process_pong(void *buffer)
 	else
 	{
 		++ping_data.stats.total_received; 
-		// rtt = get_rtt(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
+		update_stats(delta);
 		printf("%hu bytes from %s: icmp_seq=%hu ttl=%hhu time=%ld.%02ld ms\n", \
 			(uint16_t)(ntohs(ip->tot_len) - IP_HDR_SIZE), \
-			ip_str, recvd_seq, ip->ttl, rtt / 1000l, rtt % 1000l);
-
-		// update_rtt_stats(rtt, seq);
+			ip_str, recvd_seq, ip->ttl, delta / 1000l, delta % 1000l);
 	}
 
 }

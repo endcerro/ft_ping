@@ -20,6 +20,8 @@ typedef struct t_stats
     suseconds_t max;
     suseconds_t average;
     suseconds_t total;
+    suseconds_t sq_total;
+
 } s_stats;
 
 typedef struct t_data
