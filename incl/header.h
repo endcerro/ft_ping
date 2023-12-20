@@ -2,49 +2,60 @@
 #define HEADER_H
 
 #include "../libft/libft.h"
+#include "define.h"
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#include <sys/time.h>
+
 #include <stdio.h>
+#include <signal.h>
+#include <netdb.h>
+#include <errno.h>
 #include <string.h>
 
 #include <signal.h>
 #include <arpa/inet.h>
 #include <netinet/ip_icmp.h>
 #include <unistd.h>
-#include <sys/time.h>
 
-#define PING_TTL			64
-#define PING_DELAY			1
-
-# define ICMP_HDR_SIZE			ICMP_MINLEN
-# define ICMP_PAYLOAD_SIZE		56
-#define PACKET_SIZE (ICMP_HDR_SIZE + ICMP_PAYLOAD_SIZE)
-// #define PACKET_SIZE 64
-#define FT_PING_TTL 4
 typedef enum { false, true } bool;
 
-typedef struct t_ping_pkt {
-    struct icmphdr hdr;
-    char msg[PACKET_SIZE - sizeof(struct icmphdr)];
-} s_ping_pkt;
 
 typedef struct t_data
 {
 	struct sockaddr_in	target;
-	struct addrinfo 	*results;
-	struct in_addr    	*address_ptr;
+	struct addrinfo 	*results; /*Return from getaddrinfo*/
+	struct in_addr    	*address_ptr; /*IPv4 address in above struct*/
 
-	char *hostname_str;
-	char *ip_str;
-	unsigned int port;
-	int sock;
-	unsigned int sequence;
-	bool verbose;
-	s_ping_pkt ping_pkt;
-	bool run;
+	char *hostname_str; //Original input
+	char *ip_str; //String representation of the IP
+	int sock;	//Socket on which we will communicate
+	unsigned int sequence; //Current sequence index
 
+	uint run; //Used for signaling
+	
+	unsigned int port; // Unused ?
+	uint verbose; // Todo
 } s_data;
 
-void	fill_icmp_header();
+
+void	fill_icmp_header(void *buffer);
+void fill_ip_header(void*buffer, int dest);
+
 void fatal(const char* str);
+
+void send_ping(int sig);
+void receive_pong();
+void fatal(const char* str);
+void handler(int code);
+int getAddressFromHostname();
+void print_packet(void * packet);
+void print_timeval(void * packet);
+void fill_timestamp(void *buffer);
+
+void init_socket();
 
 extern s_data ping_data;
 #endif

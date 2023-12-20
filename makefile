@@ -22,8 +22,8 @@ INCLUDEF	=	$(INCLUDE)/header.h	\
 
 SRC	=	main.c	\
 	network.c	\
-	ipheader.c	\
-#	draw.c    
+	packet.c	\
+	utils.c    
 
 OBJ     = $(SRC:.c=.o)
 OBJS    = $(OBJ:%=$(OBJD)/%)
