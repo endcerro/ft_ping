@@ -62,7 +62,6 @@ static void update_stats(suseconds_t time_delta)
 	struct t_stats *stt = &(ping_data.stats);
 	if (start == 0)
 	{
-		stt->start = time_delta;
 		stt->min = time_delta;
 		stt->max = time_delta;
 		stt->total = time_delta;

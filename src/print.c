@@ -1,6 +1,5 @@
 #include "header.h"
 #include <netinet/ip_icmp.h>
-#include <math.h>
 
 void dump_ip(void *buffer)
 {

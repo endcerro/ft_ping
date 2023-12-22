@@ -11,11 +11,8 @@
 
 typedef struct t_stats
 {
-	unsigned int total_sent;
 	unsigned int total_received;
-	long long total_time;
 
-    suseconds_t start;
     suseconds_t min;
     suseconds_t max;
     suseconds_t average;

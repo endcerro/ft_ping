@@ -6,7 +6,14 @@ int tryarg(char *arg)
   if (arg == 0)
     return 1;
   int arglen = ft_strlen(arg);
-  if (arglen == 2 && ft_strncmp("-v", arg, arglen) == 0)
+  if (arglen == 2 && ft_strncmp("-?", arg, arglen) == 0)
+  {
+    printf("Available flags\n");
+    printf("-v        verbose in case of error\n");
+    printf("--ttl=    packets ttl\n");
+    return 1;
+  }
+  else if (arglen == 2 && ft_strncmp("-v", arg, arglen) == 0)
     ping_data.verbose = 1;
   else if(arglen > 6 && ft_strncmp("--ttl=", arg, arglen)==0)
   {

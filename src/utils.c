@@ -11,7 +11,7 @@ void handler(int code){
 void fatal(const char* str)
 {
   if (str)
-    printf(str);
+    printf("%s",str);
   exit(1);
 }
 
