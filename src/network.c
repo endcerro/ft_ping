@@ -21,20 +21,21 @@ void init_socket(void)
 
 void resolve(void) 
 {
-  char   ip[INET_ADDRSTRLEN]; /*Buffer to store ip string */
   struct addrinfo *result = 0; /*pointer to allocated struct from function return*/
   struct addrinfo hint; /*used as function parameter*/
   hint.ai_family = AF_INET; /*Only interested in IPv4*/
+  hint.ai_socktype = SOCK_RAW;
+		hint.ai_protocol = IPPROTO_ICMP;
+  ft_bzero(&hint, sizeof(struct addrinfo));
 
   int ret= getaddrinfo(ping_data.hostname_str, 0, &hint, &result);
 
   if (ret == 0)
   {
     ping_data.results = result; //store the pointer
-    ping_data.address_ptr = (struct in_addr*)(&((struct sockaddr_in*)result->ai_addr)->sin_addr); //store ip address ptr
+    ping_data.address_ptr = (struct in_addr*)(&((struct sockaddr_in*)ping_data.results->ai_addr)->sin_addr); //store ip address ptr
     ping_data.target.sin_addr.s_addr = ping_data.address_ptr->s_addr; //Copy into target
-    inet_ntop(ping_data.results->ai_family, ping_data.address_ptr, ip, INET_ADDRSTRLEN); //Convert into string format;
-    ping_data.ip_str = ft_strdup(ip);
+    inet_ntop(ping_data.results->ai_family, ping_data.address_ptr, ping_data.ip_str, INET_ADDRSTRLEN); //Convert into string format;
   }
   else
   {
@@ -45,6 +46,7 @@ void resolve(void)
 
 void send_ping(int sig)
 {
+  (void)sig;
   if (!ping_data.run)
     return;
 
@@ -60,7 +62,6 @@ void send_ping(int sig)
   if (nb_bytes < 0)
     fatal("sendto failed\n");
   alarm(1);
-
 }
 
 
@@ -74,7 +75,7 @@ void receive_pong()
   ft_bzero(receive_buffer, sizeof(receive_buffer));
 
   io.iov_base = receive_buffer;
-  io.iov_len = IP_HDR_SIZE + ICMP_HDR_SIZE + ICMP_BODY_SIZE;
+  io.iov_len = (IP_HDR_SIZE + ICMP_HDR_SIZE + ICMP_BODY_SIZE) * 2;
   message.msg_iov = &io;
   message.msg_iovlen = 1;
  

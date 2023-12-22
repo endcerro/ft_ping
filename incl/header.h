@@ -44,7 +44,7 @@ void print_packet(void * packet);
 void print_timeval(void * packet);
 void fill_timestamp(void *buffer);
 suseconds_t time_diff(struct timeval* then);
-
-
+void dump_ip(void *buffer);
+unsigned short checksum(void* b, int len); 
 extern s_data ping_data;
 #endif

@@ -21,7 +21,7 @@ typedef struct t_stats
     suseconds_t average;
     suseconds_t total;
     suseconds_t sq_total;
-
+ 
 } s_stats;
 
 typedef struct t_data
@@ -31,9 +31,9 @@ typedef struct t_data
 	struct in_addr    	*address_ptr; /*IPv4 address in above struct*/
 
     struct t_stats stats;
-
+    int ttl;
 	char *hostname_str; //Original input
-	char *ip_str; //String representation of the IP
+	char	ip_str[INET_ADDRSTRLEN]; //String representation of the IP
 	int sock;	//Socket on which we will communicate
 	unsigned int sequence; //Current sequence index
 
@@ -44,23 +44,6 @@ typedef struct t_data
 } s_data;
 
 
-static const char *error_table[] = 
-{
-    [ICMP_ECHOREPLY] ="Echo Reply",
-    [ICMP_SOURCE_QUENCH]= "Source Quench",
-    [ICMP_DEST_UNREACH]="Destination Unreachable",
-    [ICMP_REDIRECT] = "Redirect (change route)",
-    [ICMP_ECHO] = "Echo Request",
-    [ICMP_TIME_EXCEEDED]="Time Exceeded",
-    [ICMP_PARAMETERPROB]="Parameter Problem",
-    [ICMP_TIMESTAMP]="Timestamp Request",
-    [ICMP_TIMESTAMPREPLY] ="Timestamp Reply",
-    [ICMP_INFO_REQUEST] ="Information Request ",
-    [ICMP_INFO_REPLY] ="Information Reply ",
-    [ICMP_ADDRESS]="Address Mask Request",
-    [ICMP_ADDRESSREPLY] ="Address Mask Reply",
-    [ICMP_ADDRESSREPLY + 1] ="Unknown"
-};
 
 
 #endif

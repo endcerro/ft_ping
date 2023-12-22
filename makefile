@@ -18,7 +18,7 @@ OBJD	=	obj
 INCLUDE	=	incl
 
 INCLUDEF	=	$(INCLUDE)/header.h	\
-#				$(INCLUDE)/test.h
+				$(INCLUDE)/define.h
 
 SRC	=	main.c	\
 	network.c	\
@@ -28,7 +28,7 @@ SRC	=	main.c	\
 OBJ     = $(SRC:.c=.o)
 OBJS    = $(OBJ:%=$(OBJD)/%)
 
-CFLAGS  = -g -lm -fsanitize=address #-Wall -Wextra  #-Werror 
+CFLAGS  = -g -lm -fsanitize=address -Wall -Wextra  -Werror 
 CFRAME  = #-framework AppKit -framework OpenGL
 
 CC      = gcc

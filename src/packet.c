@@ -3,21 +3,23 @@
 //https://sites.uclouvain.be/SystInfo/usr/include/netinet/ip_icmp.h.html
 //https://en.wikipedia.org/wiki/Internet_Protocol_version_4#Header
 
-unsigned short checksum(void* b, int len)
+const char *error_table[] = 
 {
-    unsigned short* buf = b;
-    unsigned int sum = 0;
-    unsigned short result;
- 
-    for (sum = 0; len > 1; len -= 2)
-        sum += *(buf++);
-    if (len == 1)
-        sum += *(unsigned char*)buf;
-    sum = (sum >> 16) + (sum & 0xFFFF);
-    sum += (sum >> 16);
-    result =~ sum;
-    return result;
-}
+    [ICMP_ECHOREPLY] ="Echo Reply",
+    [ICMP_SOURCE_QUENCH]= "Source Quench",
+    [ICMP_DEST_UNREACH]="Destination Unreachable",
+    [ICMP_REDIRECT] = "Redirect (change route)",
+    [ICMP_ECHO] = "Echo Request",
+    [ICMP_TIME_EXCEEDED]="Time Exceeded",
+    [ICMP_PARAMETERPROB]="Parameter Problem",
+    [ICMP_TIMESTAMP]="Timestamp Request",
+    [ICMP_TIMESTAMPREPLY] ="Timestamp Reply",
+    [ICMP_INFO_REQUEST] ="Information Request ",
+    [ICMP_INFO_REPLY] ="Information Reply ",
+    [ICMP_ADDRESS]="Address Mask Request",
+    [ICMP_ADDRESSREPLY] ="Address Mask Reply",
+    [ICMP_ADDRESSREPLY + 1] ="Unknown"
+};
 
 void fill_ip_header(void* buffer, int dest_ip)
 {
@@ -25,7 +27,7 @@ void fill_ip_header(void* buffer, int dest_ip)
   	ip->version = 4; //ipv4
 	ip->ihl = IP_HDR_SIZE / 4; //Number of 4 bytes block in the message;
 	ip->tot_len = htons(PACKET_SIZE); //Size of the packet
-	ip->ttl = PING_TTL;
+	ip->ttl = ping_data.ttl;
 	ip->id = htons(0);
 	ip->frag_off = htons(0);
 	ip->protocol = IPPROTO_ICMP;
@@ -52,34 +54,6 @@ void fill_timestamp(void *buffer)
 	gettimeofday(t, 0);
 }
 
-void dump_body(void *buffer)
-{
-	struct iphdr *ip = buffer + IP_HDR_SIZE + ICMP_HDR_SIZE;
-	struct icmphdr *icmp = buffer + IP_HDR_SIZE * 2 + ICMP_HDR_SIZE;
-	uint8_t *bytes = (uint8_t *)ip;
-	char str[INET_ADDRSTRLEN];
-
-	printf("IP Hdr Dump:\n");
-	for (size_t i = 0; i < sizeof(struct ip); i += 2) {
-		printf(" %02x%02x", *bytes, *(bytes + 1));
-		bytes += 2;
-	}
-	printf("\nVr HL TOS  Len   ID Flg  off TTL Pro  cks      Src	"
-	       "Dst	Data\n");
-	printf(" %x  %x  %02x %04x %04x   %x %04x  %02x  %02x %04x ",
-	       ip->version, ip->ihl, ip->tos, (ip->tot_len),
-	       ntohs(ip->id), ntohs(ip->frag_off) >> 13,
-	       ntohs(ip->frag_off) & 0x1FFF, ip->ttl, ip->protocol,
-	       ntohs(ip->check));
-
-	inet_ntop(AF_INET, &ip->saddr, str, sizeof(str));
-	printf("%s  ", str);
-	inet_ntop(AF_INET, &ip->daddr, str, sizeof(str));
-	printf("%s\n", str);
-	printf("ICMP: type %x, code %x, size %zu, id %#04x, seq 0x%04x\n",
-	       icmp->type, icmp->code, ICMP_BODY_SIZE + sizeof(*icmp),
-	       icmp->un.echo.id, ntohs(icmp->un.echo.sequence));
-}
 
 static void update_stats(suseconds_t time_delta)
 {
@@ -109,6 +83,7 @@ void process_pong(void *buffer)
 	struct iphdr *ip = buffer;
 	struct icmphdr *icmp = buffer + IP_HDR_SIZE;
 	struct timeval *time = buffer + IP_HDR_SIZE + ICMP_HDR_SIZE;
+	struct icmphdr *icmp_error = buffer + IP_HDR_SIZE * 2 + ICMP_HDR_SIZE;
 		
 	char			*ip_str = inet_ntoa(*(struct in_addr*)&ip->saddr);
 	unsigned int	recvd_seq = htons(icmp->un.echo.sequence);
@@ -116,12 +91,13 @@ void process_pong(void *buffer)
 
 	if (icmp->type != ICMP_ECHOREPLY)
 	{
+		if (icmp->type == ICMP_ECHO)
+			return;
+		recvd_seq = htons(icmp_error->un.echo.sequence);
 		const char *strptr = error_table[icmp->type];
 		printf("From %s icmp_seq=%hu %s\n", ip_str, recvd_seq, strptr);
 		if (ping_data.verbose)
-		{
-			dump_body(buffer);
-		}
+			dump_ip(buffer);
 	}
 	else
 	{
@@ -131,5 +107,4 @@ void process_pong(void *buffer)
 			(uint16_t)(ntohs(ip->tot_len) - IP_HDR_SIZE), \
 			ip_str, recvd_seq, ip->ttl, delta / 1000l, delta % 1000l);
 	}
-
 }
