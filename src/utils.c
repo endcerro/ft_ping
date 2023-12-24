@@ -3,6 +3,7 @@
 void handler(int code){
   (void)code;
   summary();
+
   freeaddrinfo(ping_data.results);
   close(ping_data.sock);
   exit(0);

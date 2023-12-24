@@ -78,7 +78,7 @@ void receive_pong()
   io.iov_len = (IP_HDR_SIZE + ICMP_HDR_SIZE + ICMP_BODY_SIZE) * 2;
   message.msg_iov = &io;
   message.msg_iovlen = 1;
- 
+
   int ret = recvmsg(ping_data.sock, &message, 0);
 
 	if (ret == -1)

@@ -15,7 +15,7 @@ int tryarg(char *arg)
   }
   else if (arglen == 2 && ft_strncmp("-v", arg, arglen) == 0)
     ping_data.verbose = 1;
-  else if(arglen > 6 && ft_strncmp("--ttl=", arg, arglen)==0)
+  else if(arglen > 6 && ft_strncmp("--ttl=", arg, 6)==0)
   {
     ping_data.ttl = ft_atoi(arg + 6);
     if (ping_data.ttl == 0)
@@ -29,7 +29,7 @@ int tryarg(char *arg)
 }
 void init(int ac, char **av)
 {
-  ft_bzero(&ping_data, sizeof(ping_data));
+  ft_bzero(&ping_data, sizeof(struct t_data));
 
   if (getuid() != 0)
     fatal("this program needs superuser to run\n");

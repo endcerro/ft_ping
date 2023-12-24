@@ -6,7 +6,7 @@
 #    By: edal--ce <edal--ce@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/08/01 18:59:29 by edal--ce          #+#    #+#              #
-#    Updated: 2023/12/15 02:23:44 by edal--ce         ###   ########.fr        #
+#    Updated: 2023/12/24 10:55:19 by edal--ce         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,7 @@ SRC	=	main.c	\
 OBJ     = $(SRC:.c=.o)
 OBJS    = $(OBJ:%=$(OBJD)/%)
 
-CFLAGS  = -g -lm -fsanitize=address -Wall -Wextra  -Werror 
+CFLAGS  = -g -fsanitize=address -Wall -Wextra  -Werror
 CFRAME  = #-framework AppKit -framework OpenGL
 
 CC      = gcc
