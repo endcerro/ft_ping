@@ -4,6 +4,7 @@
 void dump_ip(void *buffer)
 {
 	struct iphdr *ip = buffer + IP_HDR_SIZE + ICMP_HDR_SIZE;
+    struct icmphdr *icmp = buffer + IP_HDR_SIZE * 2 + ICMP_HDR_SIZE;
 	char str[INET_ADDRSTRLEN];
 
 	printf("IP Hdr Dump:\n");
@@ -25,6 +26,9 @@ void dump_ip(void *buffer)
 	printf("%s  ", str);
 	inet_ntop(AF_INET, &ip->daddr, str, sizeof(str));
 	printf("%s\n", str);
+
+    printf("ICMP: type %d, code %d, size %lu, id %d seq %d\n", icmp->type, icmp->code, ICMP_BODY_SIZE + sizeof(struct icmphdr),
+    ntohs(icmp->un.echo.id), ntohs(icmp->un.echo.sequence));
 }
 
 void summary(void)

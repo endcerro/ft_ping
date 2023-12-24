@@ -86,16 +86,13 @@ void process_pong(void *buffer)
 
 	char			*ip_str = inet_ntoa(*(struct in_addr*)&ip->saddr);
 	unsigned int	recvd_seq = ntohs(icmp->un.echo.sequence);
-	int 	packet_pid = htons(icmp->un.echo.id);
 	suseconds_t		delta = time_diff(time);
 
-	if (packet_pid != getpid())
-		return;
 	if (icmp->type != ICMP_ECHOREPLY)
 	{
-		if (icmp->type == ICMP_ECHO)
+		if (icmp->type == ICMP_ECHO ||getpid()!= ntohs(icmp_error->un.echo.id))
 			return;
-		recvd_seq = htons(icmp_error->un.echo.sequence);
+		recvd_seq = ntohs(icmp_error->un.echo.sequence);
 		const char *strptr = error_table[icmp->type];
 		printf("From %s icmp_seq=%hu %s\n", ip_str, recvd_seq, strptr);
 		if (ping_data.verbose)
@@ -103,6 +100,8 @@ void process_pong(void *buffer)
 	}
 	else
 	{
+		if (ntohs(icmp->un.echo.id) != getpid())
+			return;
 		++ping_data.stats.total_received;
 		update_stats(delta);
 		printf("%hu bytes from %s: icmp_seq=%hu ttl=%hhu time=%ld.%02ld ms\n", \
